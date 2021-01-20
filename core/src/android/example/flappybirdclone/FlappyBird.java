@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.Random;
+
 public class FlappyBird extends ApplicationAdapter {
     SpriteBatch batch;
 
@@ -20,6 +22,9 @@ public class FlappyBird extends ApplicationAdapter {
     Texture topTube;
     Texture bottomTube;
     int spaceBetweenTubes = 500;
+    float tubeShift;
+    Random random;
+
 
     @Override
     public void create() {
@@ -33,6 +38,7 @@ public class FlappyBird extends ApplicationAdapter {
 
         topTube = new Texture("top_tube.png");
         bottomTube = new Texture("bottom_tube.png");
+        random = new Random();
     }
 
     @Override
@@ -49,17 +55,10 @@ public class FlappyBird extends ApplicationAdapter {
 
         if (gameStateFlag == 1) {
 
-            batch.draw(topTube, Gdx.graphics.getWidth() / 2
-                    - topTube.getWidth() / 2, Gdx.graphics.getHeight() / 2
-                    + spaceBetweenTubes / 2);
-
-            batch.draw(topTube, Gdx.graphics.getWidth() / 2
-                    - bottomTube.getWidth() / 2, Gdx.graphics.getHeight() / 2
-                    - spaceBetweenTubes / 2
-                    - bottomTube.getHeight());
-
             if (Gdx.input.justTouched()) {
-                fallingSpeed = -30;
+                fallingSpeed = -20;
+                tubeShift = (random.nextFloat() - 0.5f) *
+                        (Gdx.graphics.getHeight() - spaceBetweenTubes - 200);
             }
             if (flyHeight > 0 || fallingSpeed < 0) {
                 fallingSpeed++;
@@ -72,6 +71,16 @@ public class FlappyBird extends ApplicationAdapter {
                 gameStateFlag = 1;
             }
         }
+        batch.draw(topTube, Gdx.graphics.getWidth() / 2
+                - topTube.getWidth() / 2, Gdx.graphics.getHeight() / 2
+                + spaceBetweenTubes / 2
+                + tubeShift);
+
+        batch.draw(bottomTube, Gdx.graphics.getWidth() / 2
+                - bottomTube.getWidth() / 2, Gdx.graphics.getHeight() / 2
+                - spaceBetweenTubes / 2
+                - bottomTube.getHeight()
+                + tubeShift);
 
         if (birdStateFlag == 0) {
             birdStateFlag = 1;
