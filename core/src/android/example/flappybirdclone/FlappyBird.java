@@ -7,28 +7,59 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class FlappyBird extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture bird_wings_up;
-	Texture background;
-	
-	@Override
-	public void create () {
-		batch = new SpriteBatch();
-		background = new Texture("background.png");
-		bird_wings_up = new Texture("bird_wings_up.png");
-	}
+    SpriteBatch batch;
 
-	@Override
-	public void render () {
+    int birdStateFlag = 0;
 
-		batch.begin();
-		batch.draw(background,0,0,Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight());
-		batch.draw(bird_wings_up,Gdx.graphics.getWidth()/2
-						-bird_wings_up.getWidth(),
-				Gdx.graphics.getHeight()/2
-						-bird_wings_up.getHeight());
-		batch.end();
+    Texture background;
+    Texture[] bird;
+    float flyHeight;
+    float fallingSpeed = 0;
+    int gameStateFlag = 0;
+
+    @Override
+    public void create() {
+        batch = new SpriteBatch();
+        background = new Texture("background.png");
+        bird = new Texture[2];
+        bird[0] = new Texture("bird_wings_up.png");
+        bird[1] = new Texture("bird_wings_down.png");
+        flyHeight = Gdx.graphics.getHeight() / 2
+                - bird[0].getHeight() / 2;
+
+    }
+
+    @Override
+    public void render() {
+        if (Gdx.input.justTouched()) {
+            Gdx.app.log("Tap", "Oops!");
+            gameStateFlag = 1;
+        }
+
+        if (gameStateFlag==1){
+            fallingSpeed++;
+            flyHeight-=fallingSpeed;
+        } else {
+            if (Gdx.input.justTouched()) {
+                Gdx.app.log("Tap", "Oops!");
+                gameStateFlag = 1;
+            }
+        }
+
+
+        if (birdStateFlag == 0) {
+            birdStateFlag = 1;
+        } else {
+            birdStateFlag = 0;
+        }
+
+        batch.begin();
+        batch.draw(background, 0, 0, Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight());
+        batch.draw(bird[birdStateFlag], Gdx.graphics.getWidth() / 2
+                        - bird[birdStateFlag].getWidth() / 2,
+                flyHeight);
+        batch.end();
 
 
 
@@ -43,10 +74,10 @@ public class FlappyBird extends ApplicationAdapter {
 		batch.end();
 
 		 */
-	}
-	
-	@Override
-	public void dispose () {
+    }
+
+    @Override
+    public void dispose() {
 
 
 
@@ -59,5 +90,5 @@ public class FlappyBird extends ApplicationAdapter {
 		img.dispose();
 
 		 */
-	}
+    }
 }
