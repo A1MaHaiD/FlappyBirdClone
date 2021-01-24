@@ -3,10 +3,9 @@ package android.example.flappybirdclone;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
@@ -29,9 +28,9 @@ public class FlappyBird extends ApplicationAdapter {
     int spaceBetweenTubes = 500;
     Random random;
     int tubeSpeed = 4;
-    int tubeNumbers = 5;
-    float tubeX[] = new float[tubeNumbers];
-    float tubeShift[] = new float[tubeNumbers];
+    int tubeNumber = 5;
+    float tubeX[] = new float[tubeNumber];
+    float tubeShift[] = new float[tubeNumber];
     float distanceBetweenTubes;
 
     Circle birdCircle;
@@ -39,15 +38,21 @@ public class FlappyBird extends ApplicationAdapter {
     Rectangle[] bottomTubeRectangle;
     // ShapeRenderer shapeRenderer;
 
+    int gameScore = 0;
+    int passedTubeIndex = 0;
+    BitmapFont scoreFont;
+
     @Override
     public void create() {
+
         batch = new SpriteBatch();
         background = new Texture("background.png");
         //      shapeRenderer = new ShapeRenderer();
 
+
         birdCircle = new Circle();
-        topTubeRectangle = new Rectangle[tubeNumbers];
-        bottomTubeRectangle = new Rectangle[tubeNumbers];
+        topTubeRectangle = new Rectangle[tubeNumber];
+        bottomTubeRectangle = new Rectangle[tubeNumber];
 
         bird = new Texture[2];
         bird[0] = new Texture("bird_wings_up.png");
@@ -59,8 +64,12 @@ public class FlappyBird extends ApplicationAdapter {
         bottomTube = new Texture("bottom_tube.png");
         random = new Random();
 
+        scoreFont = new BitmapFont();
+        scoreFont.setColor(Color.YELLOW);
+        scoreFont.getData().setScale(10);
+
         distanceBetweenTubes = Gdx.graphics.getWidth() / 2;
-        for (int i = 0; i < tubeNumbers; i++) {
+        for (int i = 0; i < tubeNumber; i++) {
             tubeX[i] = Gdx.graphics.getWidth() / 2
                     - topTube.getWidth() / 2 + i * distanceBetweenTubes;
             tubeShift[i] = (random.nextFloat() - 0.5f) *
@@ -87,6 +96,18 @@ public class FlappyBird extends ApplicationAdapter {
 
         if (gameStateFlag == 1) {
 
+            Gdx.app.log("Game score", String.valueOf(gameScore));
+
+            if (tubeX[passedTubeIndex] < Gdx.graphics.getWidth() / 2) {
+                gameScore++;
+
+                if (passedTubeIndex < tubeNumber - 1){
+                    passedTubeIndex++;
+                }else {
+                    passedTubeIndex = 0;
+                }
+            }
+
             if (Gdx.input.justTouched()) {
                 fallingSpeed = -20;
             }
@@ -101,10 +122,10 @@ public class FlappyBird extends ApplicationAdapter {
                 gameStateFlag = 1;
             }
         }
-        for (int i = 0; i < tubeNumbers; i++) {
+        for (int i = 0; i < tubeNumber; i++) {
 
             if (tubeX[i] < -topTube.getWidth()) {
-                tubeX[i] = tubeNumbers * distanceBetweenTubes;
+                tubeX[i] = tubeNumber * distanceBetweenTubes;
             } else {
 
                 tubeX[i] -= tubeSpeed;
@@ -140,6 +161,9 @@ public class FlappyBird extends ApplicationAdapter {
         batch.draw(bird[birdStateFlag], Gdx.graphics.getWidth() / 2
                         - bird[birdStateFlag].getWidth() / 2,
                 flyHeight);
+
+        scoreFont.draw(batch, String.valueOf(gameScore),100,200);
+
         batch.end();
 
         birdCircle.set(Gdx.graphics.getWidth() / 2,
@@ -149,7 +173,7 @@ public class FlappyBird extends ApplicationAdapter {
         //   shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         //   shapeRenderer.setColor(Color.CYAN);
         //   shapeRenderer.circle(birdCircle.x, birdCircle.y, birdCircle.radius);
-        for (int i = 0; i < tubeNumbers; i++) {
+        for (int i = 0; i < tubeNumber; i++) {
 //            shapeRenderer.rect(tubeX[i], Gdx.graphics.getHeight() / 2
 //                            + spaceBetweenTubes / 2
 //                            + tubeShift[i],
